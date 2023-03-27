@@ -8,10 +8,10 @@ class CarService {
   constructor(carODM: CarODM = new CarODM()) {
     this.carODM = carODM;
   }
-  public async createCar(car: ICar): Promise<Car> {
-    const createdCar = await this.carODM.create(car);
-    const returnCar = new Car(createdCar);
-    return returnCar;
+  public async createCar(carObj: ICar): Promise<Car> {
+    const createdCar = await this.carODM.create(carObj);
+    const car = new Car(createdCar);
+    return car;
   }
 
   public async findCars(): Promise<Car[]> {
