@@ -7,6 +7,6 @@ const carController = new CarController();
 
 carRoutes.post('/', (req, res) => carController.createCar(req, res));
 carRoutes.get('/', (req, res) => carController.findCars(req, res));
-carRoutes.get('/:id', (req, res) => carController.findCarById(req, res));
+carRoutes.get('/:id', (req, res, next) => carController.findCarById(req, res, next));
 
 export default carRoutes;

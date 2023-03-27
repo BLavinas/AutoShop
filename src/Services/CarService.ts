@@ -1,5 +1,5 @@
 import Car from '../Domains/Car';
-// import CustomErrors from '../errors/customErrors';
+import CustomErrors from '../errors/customErrors';
 import ICar from '../Interfaces/ICar';
 import CarODM from '../Models/CarODM';
 
@@ -21,8 +21,18 @@ class CarService {
   }
 
   public async findCarById(id: string): Promise<Car | null | object> {
-    const getCarById = await this.carODM.findById(id);
-    if (!getCarById) return getCarById;
+    let getCarById;
+
+    try {
+      getCarById = await this.carODM.findById(id);
+    } catch (error) {
+      throw new CustomErrors('Invalid mongo id', '422');
+    }
+
+    if (!getCarById) {
+      throw new CustomErrors('Car not found', '404');
+    }
+
     const carById = new Car(getCarById);
     return carById;
   }
