@@ -36,6 +36,23 @@ class CarService {
     const carById = new Car(getCarById);
     return carById;
   }
+
+  public async updateCar(id: string, car: ICar): Promise<Car | null> {
+    let updatedCar;
+
+    try {
+      updatedCar = await this.carODM.update(id, car);
+    } catch (error) {
+      throw new CustomErrors('Invalid mongo id', '422');
+    }
+
+    if (!updatedCar) {
+      throw new CustomErrors('Car not found', '404');
+    }
+
+    const returnedCar = new Car(updatedCar);
+    return returnedCar;
+  }
 }
 
 export default CarService;
