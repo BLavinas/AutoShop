@@ -6,7 +6,7 @@ import CustomErrors from '../../../src/errors/customErrors';
 import CarService from '../../../src/Services/CarService';
 import { carInput, carOutput, carOutputArray } from './Mock/carMock.test';
 
-describe('Finding car by id', function () {
+describe('Testing car route', function () {
   afterEach(Sinon.restore);
   it('Success finding car by id', async function () {
     Sinon.stub(Model, 'findById').resolves(carOutput);
@@ -17,30 +17,87 @@ describe('Finding car by id', function () {
     expect(result).to.be.deep.equal(carOutput);
   });
   it('Trying with incorrect id', async function () {
+    const invalidID = 'abc';
+    const errorMessage = 'Invalid mongo id';
+    const errorStatus = '422';
+
+    Sinon.stub(Model, 'findById').throws(new CustomErrors(errorMessage, errorStatus));
+    try {
+      const carService = new CarService();
+      await carService.findCarById(invalidID);
+    } catch (error) {
+      expect((error as Error).message).to.equal(errorMessage);
+      expect((error as Error).stack).to.equal(errorStatus);
+    }
+  });
+
+  it('Trying with nonexistent id', async function () {
+    const nonexistId = '6421df8e90daac0e2b5cd916';
+    const errorMessage = 'Car not found';
+    const errorStatus = '404';
+    Sinon.stub(Model, 'findById').resolves(null);
+    try {
+      const carService = new CarService();
+      await carService.findCarById(nonexistId);
+    } catch (error) {
+      expect((error as Error).message).to.equal(errorMessage);
+      expect((error as Error).stack).to.equal(errorStatus);
+    }
+  });
+
+  it('Success finding all cars', async function () {
+    Sinon.stub(Model, 'find').resolves(carOutputArray);
+
     const carService = new CarService();
-    Sinon.stub(Model, 'findById').throws(new CustomErrors('Invalid mongo id', '422'));
-    expect(await carService.findCarById('1')).to.throw(CustomErrors, 'Invalid mongo id');
+    const result = await carService.findCars();
+
+    expect(result).to.be.deep.equal(carOutputArray);
   });
 
-  describe('Finding car', function () {
-    it('Success finding all cars', async function () {
-      Sinon.stub(Model, 'find').resolves(carOutputArray);
+  it('Success creating new car', async function () {
+    Sinon.stub(Model, 'create').resolves(carOutput);
 
-      const carService = new CarService();
-      const result = await carService.findCars();
+    const carService = new CarService();
+    const result = await carService.createCar(carInput);
 
-      expect(result).to.be.deep.equal(carOutputArray);
-    });
+    expect(result).to.be.deep.equal(carOutput);
+  });
+  it('Success updating a car by id', async function () {
+    Sinon.stub(Model, 'findByIdAndUpdate').resolves(carOutput);
+
+    const carService = new CarService();
+    const result = await carService.updateCar(carOutput.id, carInput);
+    expect(result).to.be.deep.equal(carOutput);
   });
 
-  describe('Creating new car', function () {
-    it('Success creating new car', async function () {
-      Sinon.stub(Model, 'create').resolves(carOutput);
+  it('Trying update with incorrect id', async function () {
+    const invalidID = 'abc';
+    const errorMessage = 'Invalid mongo id';
+    const errorStatus = '422';
 
+    Sinon.stub(Model, 'findByIdAndUpdate').throws(
+      new CustomErrors(errorMessage, errorStatus),
+    );
+    try {
       const carService = new CarService();
-      const result = await carService.createCar(carInput);
+      await carService.updateCar(invalidID, carInput);
+    } catch (error) {
+      expect((error as Error).message).to.equal(errorMessage);
+      expect((error as Error).stack).to.equal(errorStatus);
+    }
+  });
 
-      expect(result).to.be.deep.equal(carOutput);
-    });
+  it('Trying update with nonexistent id', async function () {
+    const nonexistId = '6421df8e90daac0e2b5cd916';
+    const errorMessage = 'Car not found';
+    const errorStatus = '404';
+    Sinon.stub(Model, 'findByIdAndUpdate').resolves(null);
+    try {
+      const carService = new CarService();
+      await carService.updateCar(nonexistId, carInput);
+    } catch (error) {
+      expect((error as Error).message).to.equal(errorMessage);
+      expect((error as Error).stack).to.equal(errorStatus);
+    }
   });
 });
