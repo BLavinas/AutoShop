@@ -6,7 +6,7 @@ import CustomErrors from '../../../src/errors/customErrors';
 import CarService from '../../../src/Services/CarService';
 import { carInput, carOutput, carOutputArray } from './Mock/carMock.test';
 
-describe('Testing car route', function () {
+describe('Testing car service', function () {
   afterEach(Sinon.restore);
   it('Success finding car by id', async function () {
     Sinon.stub(Model, 'findById').resolves(carOutput);
