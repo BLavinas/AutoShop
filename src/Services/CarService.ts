@@ -4,9 +4,13 @@ import ICar from '../Interfaces/ICar';
 import CarODM from '../Models/CarODM';
 
 class CarService {
+  private invalidCar: string;
+  private invalidId: string;
   private carODM: CarODM;
   constructor(carODM: CarODM = new CarODM()) {
     this.carODM = carODM;
+    this.invalidId = 'Invalid mongo id';
+    this.invalidCar = 'Car not found';
   }
   public async createCar(carObj: ICar): Promise<Car> {
     const createdCar = await this.carODM.create(carObj);
@@ -26,11 +30,11 @@ class CarService {
     try {
       getCarById = await this.carODM.findById(id);
     } catch (error) {
-      throw new CustomErrors('Invalid mongo id', '422');
+      throw new CustomErrors(this.invalidId, '422');
     }
 
     if (!getCarById) {
-      throw new CustomErrors('Car not found', '404');
+      throw new CustomErrors(this.invalidCar, '404');
     }
 
     const carById = new Car(getCarById);
@@ -43,14 +47,29 @@ class CarService {
     try {
       updatedCar = await this.carODM.update(id, car);
     } catch (error) {
-      throw new CustomErrors('Invalid mongo id', '422');
+      throw new CustomErrors(this.invalidId, '422');
     }
 
     if (!updatedCar) {
-      throw new CustomErrors('Car not found', '404');
+      throw new CustomErrors(this.invalidCar, '404');
     }
 
     const returnedCar = new Car(updatedCar);
+    return returnedCar;
+  }
+
+  public async deleteCar(id: string) {
+    let deletedCar;
+
+    try {
+      deletedCar = await this.carODM.delete(id);
+    } catch (error) {
+      throw new CustomErrors(this.invalidId, '422');
+    }
+    if (!deletedCar) {
+      throw new CustomErrors(this.invalidCar, '404');
+    }
+    const returnedCar = new Car(deletedCar);
     return returnedCar;
   }
 }
