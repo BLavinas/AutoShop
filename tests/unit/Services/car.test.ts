@@ -9,7 +9,9 @@ import { carInput, carOutput, carOutputArray } from './Mock/carMock.test';
 describe('Testing car service', function () {
   const carNotFound = 'Car not found';
   const invalidId = 'Invalid mongo id';
+
   afterEach(Sinon.restore);
+
   it('Success finding car by id', async function () {
     Sinon.stub(Model, 'findById').resolves(carOutput);
 
@@ -18,6 +20,7 @@ describe('Testing car service', function () {
 
     expect(result).to.be.deep.equal(carOutput);
   });
+
   it('Trying with incorrect id', async function () {
     const invalidID = 'abc';
     const errorMessage = invalidId;
