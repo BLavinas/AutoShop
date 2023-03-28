@@ -8,5 +8,7 @@ motorcycleRoutes.post('/', (req, res) => motorcycleController.createMotorcycle(r
 motorcycleRoutes.get('/', (req, res) => motorcycleController.findMotorcycle(req, res));
 motorcycleRoutes.get('/:id', (req, res, next) => motorcycleController
   .findMotorcycleById(req, res, next));
+motorcycleRoutes.put('/:id', (req, res, next) => motorcycleController
+  .updateMotorcycle(req, res, next));
 
 export default motorcycleRoutes;

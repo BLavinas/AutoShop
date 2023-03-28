@@ -33,6 +33,18 @@ class MotorcycleController {
     const allMotorcycles = await this.motorcycleService.findMotorcycle();
     res.status(200).json(allMotorcycles);
   }
+
+  public async updateMotorcycle(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    const { body } = req;
+    try {
+      const updateMotorcycleById = await this.motorcycleService.updateMotorcycle(id, body);
+      return res.status(200).json(updateMotorcycleById);
+    } catch (error) {
+      const err = error;
+      next(err);
+    }
+  }
 }
 
 export default MotorcycleController;

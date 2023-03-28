@@ -33,6 +33,23 @@ class MotorcycleService {
     const motorcycleById = new Motorcycle(getMotorcycleById);
     return motorcycleById;
   }
+
+  public async updateMotorcycle(id: string, motorcycle: IMotorcycle): Promise<Motorcycle | null> {
+    let updatedMotorcycle;
+
+    try {
+      updatedMotorcycle = await this.motorcycleODM.update(id, motorcycle);
+    } catch (error) {
+      throw new CustomErrors('Invalid mongo id', '422');
+    }
+
+    if (!updatedMotorcycle) {
+      throw new CustomErrors('Motorcycle not found', '404');
+    }
+
+    const returnedMotorcycle = new Motorcycle(updatedMotorcycle);
+    return returnedMotorcycle;
+  }
 }
 
 export default MotorcycleService;
